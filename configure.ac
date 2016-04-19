@@ -41,7 +41,7 @@ AC_CONFIG_FILES([
 	src/Makefile
         module_vtun.pc
 	share/ln/module_vtun.inc.lnc
-], [cp module_vtun.pt ${ac_abs_top_srcdir}])
+])
 AC_CONFIG_FILES([module_vtun.pt], [cp module_vtun.pt ${ac_abs_top_srcdir}])
 
 AC_OUTPUT
