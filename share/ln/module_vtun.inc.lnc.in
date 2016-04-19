@@ -1,0 +1,21 @@
+requires_version 0.2.43
+# this include file can be customized with the following defines:
+#   module_vtun_base
+#     (optional) path to module_vtun base directory
+#     e.g. /volume/software/robotkernel/packages/module_vtun/3.0.1
+#     defaults to rmpm structure
+#   module_vtun_libdir
+#     (optional) add custom module search paths
+# rk_depends: interface_process_data_inspection
+
+defines
+module_vtun_base: %(dirname %(dirname %(CURDIR)))
+module_vtun_base_type: %(ifexists "%(module_vtun_base)/lib/libmodule_vtun.so", "local_install", "rmpm_release")
+module_vtun_libdir: %(ifeq "%(module_vtun_base_type)", "local_install", "%(module_vtun_base)/lib", "%(module_vtun_base)/lib/$(ARCH)")
+
+#module_vtun_libpath: 
+#ifndef rk_libpath: rk_libpath: ""
+#rk_libpath: %(rk_libpath):%(module_vtun_libpath)
+
+ifndef rk_modules: rk_modules: ""
+rk_modules: %(rk_modules):%(module_vtun_libdir)
