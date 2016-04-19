@@ -2,6 +2,7 @@ AC_PREREQ([2.63])
 AC_INIT([module_vtun], [4.0.0], [florian.schmidt@dlr.de])
 AM_INIT_AUTOMAKE([-Wall -Werror foreign])
 AC_CONFIG_HEADERS([config.h])
+AC_CONFIG_MACRO_DIR([m4])
 
 m4_ifdef([RMPM_ENV], [RMPM_ENV])
 m4_ifdef([RMPM_ARCH], [RMPM_ARCH])
