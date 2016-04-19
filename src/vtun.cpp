@@ -12,6 +12,7 @@
 
 #include <string_util/string_util.h>
 
+#include <vector>
 #include <string>
 
 using namespace std;
@@ -36,6 +37,8 @@ vtun::vtun(string name, const YAML::Node& node)
 	: runnable(node), module_base("vtun", name, node) {
 
 	fd = -1;
+	write_to = get_as<string>(node, "write_to");
+	mtu = get_as<unsigned int>(node, "mtu", 1024*10);
 }
 
 vtun::~vtun() {
@@ -56,6 +59,12 @@ int vtun::set_state(module_state_t requested_state) {
 		break;
         }
         case module_state_preop: {
+
+		kernel* k = kernel::get_instance();
+		write_to_mod = k->get_module(write_to.c_str());
+		if(!write_to_mod)
+			throw ::str_exception_tb("could not get write_to module named %s", repr(write_to).c_str());
+		
 		fd = open("/dev/net/tun", O_RDWR);
 		if(fd == -1)
 			throw errno_exception_tb("could not open /dev/net/tun");
@@ -95,13 +104,29 @@ int vtun::set_state(module_state_t requested_state) {
 void vtun::run() {
 	log(info, "vtun tid %d started!\n", gettid());
 	
+	vector<char> receive_buffer(mtu);
 	while (running()) {
-
-		sleep(1);
+		int len = ::read(fd, &receive_buffer[0], mtu);
+		if(len == -1)
+			throw errno_exception_tb("failed to read max %d bytes from tun device", mtu);
+		log(verbose, "got net packet of length %d\n", len);
+		
+		int n = write_to_mod->write(&receive_buffer[0], (size_t)len);
+		if(n != len)
+			log(warning, "wanted to write %d bytes to %s->write() returned %d\n", len, write_to.c_str(), n);
 	}
 
 	log(info, "vtun handler %d stopping\n", gettid());
 }
 
+size_t vtun::write(void* buf, size_t bufsize) {
+	// send packet!
+	int n = ::write(fd, buf, bufsize);
+	if(n == -1)
+		throw errno_exception_tb("write(%d bytes)", bufsize);
+	if(n != (int)bufsize)
+		log(warning, "wanted to write %d bytes, write() returned %d\n", bufsize, n);
+	return n;
+}
 
 }

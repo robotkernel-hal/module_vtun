@@ -19,12 +19,17 @@ class vtun
 
 	int fd;
 	string if_name;
+	string write_to;
+	robotkernel::module* write_to_mod;
+	unsigned int mtu;
         void run();
 public:
         vtun(string name, const YAML::Node& node);
         ~vtun();
 
 	int set_state(module_state_t requested_state);
+	size_t write(void* buf, size_t bufsize);
+
 };
 
 }

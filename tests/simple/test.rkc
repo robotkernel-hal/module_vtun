@@ -2,9 +2,17 @@ log_level: debug
 
 modules:
   - name: intfA
-    #module_file: libmodule_vtun.so
-    module_file: /root/robotkernel/module_vtun/build/debian8-x86_64-gcc4.x/src/.libs/libmodule_vtun.so
+    module_file: libmodule_vtun.so
     power_up: true
     config:
       prio: 60
       affinity: 1
+      write_to: intfB
+    
+  - name: intfB
+    module_file: libmodule_vtun.so
+    power_up: true
+    config:
+      prio: 60
+      affinity: 1
+      write_to: intfA
