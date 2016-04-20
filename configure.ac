@@ -36,6 +36,8 @@ AC_CHECK_FUNCS([strdup pthread_setname_np gettid])
 AC_CHECK_LIB(dl, dlopen, DL_LIBS="-ldl", DL_LIBS=)
 AC_SUBST(DL_LIBS)
 
+INSTALL_DATA="${INSTALL} -p -m 644"
+
 AC_CONFIG_FILES([
 	Makefile
 	src/Makefile
