@@ -4,7 +4,7 @@ VERSION             = @PACKAGE_VERSION@
 DESCRIPTION         = robotkernel vtun module
 DOCUMENTATION       = doc/README
 MAINTAINER          = Florian Schmidt <florian.schmidt@dlr.de>
-ARCHS               = sled11-x86-gcc4.x, sled11-x86_64-gcc4.x, ubuntu12.04-armhf-gcc4.x
+ARCHS               = @ARCHS@
 
 [install]
 build/${ARCH}/install/lib => lib/${ARCH}
