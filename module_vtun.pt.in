@@ -1,12 +1,12 @@
 PTVERSION           = 2
 NAME                = @PACKAGE@
-VERSION             = @PACKAGE_VERSION@
+VERSION             = @VERSION@
 DESCRIPTION         = robotkernel vtun module
-DOCUMENTATION       = doc/README
-MAINTAINER          = Florian Schmidt <florian.schmidt@dlr.de>
+DOCUMENTATION       = https://rmintra01.robotic.dlr.de/wiki/Robotkernel/module_vtun
+MAINTAINER          = @MAINTAINER@
 ARCHS               = @ARCHS@
 
 [install]
 build/${ARCH}/install/lib => lib/${ARCH}
-doc/ => doc/
+README.md => doc/
 share/ => share/

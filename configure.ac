@@ -7,24 +7,44 @@ AM_INIT_AUTOMAKE([-Wall -Werror foreign])
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_MACRO_DIR([m4])
 
-m4_ifdef([RMPM_ENV], [RMPM_ENV])
-m4_ifdef([RMPM_ARCH], [RMPM_ARCH])
+# load env-file with each make invocation
+if test -n "$SOURCE_ENV"; then
+   echo "loading $SOURCE_ENV"
+   source $SOURCE_ENV
+fi
 
 # Checks for programs.
+AM_PROG_AR
 AC_PROG_CXX
 AC_PROG_AWK
 AC_PROG_INSTALL
-m4_ifdef([AM_PROG_AR], [AM_PROG_AR])
 AC_PROG_LIBTOOL
 AC_PROG_LN_S
-m4_ifdef([PKG_PROG_PKG_CONFIG], [PKG_PROG_PKG_CONFIG])
-m4_ifdef([PKG_INSTALLDIR], [PKG_INSTALLDIR], [pkgconfigdir='${libdir}/pkgconfig' AC_SUBST([pkgconfigdir])])
+AC_PROG_MAKE_SET
 
-PKG_CHECK_MODULES([ROBOTKERNEL], [robotkernel], [], [
-                    RMPM_CHECK_MODULES([ROBOTKERNEL], [robotkernel.robotkernel-4.0])
-                   ])
+if test -z "$MAKE"; then
+   MAKE=make
+fi
+# expand path with each make invocation
+if test -n "$TOOLCHAIN"; then
+   MAKE="$MAKE PATH=$TOOLCHAIN:$PATH"
+   PATH=$TOOLCHAIN:$PATH
+fi
+# load env-file with each make invocation
+if test -n "$SOURCE_ENV"; then
+   echo "loading $SOURCE_ENV"
+   source $SOURCE_ENV
+   MAKE="source $SOURCE_ENV; $MAKE"
+fi
+if test -n "$MAKE"; then
+   SET_MAKE="MAKE := $MAKE"
+fi
+AC_SUBST(SET_MAKE)
 
-PKG_CHECK_MODULES([LIBSTRING_UTIL], [libstring_util], [], [RMPM_CHECK_MODULES([LIBSTRING_UTIL], [software.libstring_util])])
+# setup rmpm
+RMPM_ARCH
+m4_esyscmd([scripts/m4_deps.py])
+RM_FIND_LN_FROM_ENV
 
 # Checks for header files.
 AC_CHECK_HEADERS([stdlib.h string.h termios.h sys/syscall.h process.h])
@@ -43,11 +63,11 @@ INSTALL_DATA="${INSTALL} -p -m 644"
 
 AC_CONFIG_FILES([
 	Makefile
-	src/Makefile
+	src/main/cpp/Makefile
         module_vtun.pc
 	share/ln/module_vtun.inc.lnc
 ])
-AC_CONFIG_FILES([module_vtun.pt], [cp module_vtun.pt ${ac_abs_top_srcdir}])
+
 
 AC_OUTPUT
 
