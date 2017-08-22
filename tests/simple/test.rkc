@@ -1,18 +1,18 @@
-log_level: debug
+log_level: verbose
 
 modules:
   - name: intfA
-    module_file: libmodule_vtun.so
-    power_up: true
+    so_file: libmodule_vtun.so
+    power_up: op
     config:
       prio: 60
       affinity: 1
-      write_to: intfB
+      write_to: intfB.vtun.stream
     
   - name: intfB
-    module_file: libmodule_vtun.so
-    power_up: true
+    so_file: libmodule_vtun.so
+    power_up: op
     config:
       prio: 60
       affinity: 1
-      write_to: intfA
+      write_to: intfA.vtun.stream

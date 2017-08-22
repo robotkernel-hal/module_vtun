@@ -59,7 +59,7 @@ int gettid() {
 
 
 vtun::vtun(string name, const YAML::Node& node) : 
-    runnable(node), module_base("vtun", name, node) 
+    runnable(node), module_base("vtun", name, node), stream(name, "vtun")
 {
     fd = -1;
     write_to = get_as<string>(node, "write_to");
@@ -69,6 +69,9 @@ vtun::vtun(string name, const YAML::Node& node) :
 vtun::~vtun() {
     if(state != module_state_init)
         set_state(module_state_init);
+            
+    kernel::get_instance()->remove_device(
+            std::static_pointer_cast<stream>(shared_from_this()));
 }
 
 // set state
@@ -76,7 +79,7 @@ int vtun::set_state(module_state_t requested_state) {
     kernel& k = *kernel::get_instance();
 
     // get transition
-    uint32_t transition = GEN_STATE(this->state, state);
+    uint32_t transition = GEN_STATE(this->state, requested_state);
 
     switch (transition) {
         case op_2_safeop:
@@ -151,7 +154,7 @@ int vtun::set_state(module_state_t requested_state) {
             break;
     }
 
-    return (this->state = state);
+    return (this->state = requested_state);
 }
 
 void vtun::run() {
@@ -175,8 +178,8 @@ void vtun::run() {
 size_t vtun::write(void* buf, size_t bufsize) {
     // send packet!
     int n = ::write(fd, buf, bufsize);
-    if(n == -1)
-        throw errno_exception_tb("write(%d bytes)", bufsize);
+//    if(n == -1)
+//        throw errno_exception_tb("write(%d bytes)", bufsize);
     if(n != (int)bufsize)
         log(warning, "wanted to write %d bytes, write() returned %d\n", bufsize, n);
     return n;

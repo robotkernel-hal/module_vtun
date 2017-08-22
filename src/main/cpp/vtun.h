@@ -27,6 +27,7 @@
 #include <robotkernel/kernel.h>
 #include <robotkernel/helpers.h>
 #include <robotkernel/runnable.h>
+#include <robotkernel/stream.h>
 #include <robotkernel/module_base.h>
 
 #include <yaml-cpp/yaml.h>
@@ -39,8 +40,10 @@ namespace module_vtun {
 using namespace std;
 
 class vtun : 
+    public std::enable_shared_from_this<vtun>,
     public robotkernel::runnable, 
-    public robotkernel::module_base 
+    public robotkernel::module_base,
+    public robotkernel::stream
 {
     private:
         int fd;                                     //!< tun device file descriptor
@@ -60,6 +63,11 @@ class vtun :
         vtun(string name, const YAML::Node& node);
         ~vtun();
 
+        void init() {
+            robotkernel::kernel::get_instance()->add_device(
+                    std::static_pointer_cast<stream>(shared_from_this()));
+        }
+
         //! set state
         /*!
          * \param state new state
@@ -67,6 +75,7 @@ class vtun :
         int set_state(module_state_t requested_state);
 
         size_t write(void* buf, size_t bufsize);
+        size_t read(void* buf, size_t bufsize) { return 0; };
 };
 
 #ifdef EMACS
