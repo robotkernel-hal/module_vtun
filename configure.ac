@@ -40,12 +40,12 @@ AC_CHECK_FUNCS([strdup pthread_setname_np gettid])
 # Checks for library functions.
 AC_CHECK_LIB(dl, dlopen)
 
-AC_CONFIG_FILES([
+AC_CONFIG_FILES([ 
 	Makefile
 	src/main/cpp/Makefile
-        module_vtun.pc
-	share/ln/module_vtun.inc.lnc
+    module_vtun.pc
 ])
+AC_CONFIG_FILES([share/ln/module_vtun.inc.lnc], [cp share/ln/module_vtun.inc.lnc ${ac_abs_top_srcdir}/share/ln/])
 
 
 AC_OUTPUT
