@@ -41,18 +41,12 @@ using namespace std;
 
 class vtun : 
     public std::enable_shared_from_this<vtun>,
-    public robotkernel::runnable, 
     public robotkernel::module_base,
     public robotkernel::stream
 {
     private:
         int fd;                                     //!< tun device file descriptor
         string if_name;                             //!< tun interface name
-        string write_to;                            //!< robotkernel stream device to write to
-        robotkernel::sp_stream_t write_to_stream;   //!< robotkernel stream deivce
-        unsigned int mtu;                           //!< max mtu size
-
-        void run();                                 //!< packet receive thread
 
     public:
         //! de-/construction
@@ -75,7 +69,7 @@ class vtun :
         int set_state(module_state_t requested_state);
 
         size_t write(void* buf, size_t bufsize);
-        size_t read(void* buf, size_t bufsize) { return 0; };
+        size_t read(void* buf, size_t bufsize);
 };
 
 #ifdef EMACS

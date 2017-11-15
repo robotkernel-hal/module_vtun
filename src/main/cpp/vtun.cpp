@@ -62,8 +62,6 @@ vtun::vtun(string name, const YAML::Node& node) :
     runnable(node), module_base("vtun", name, node), stream(name, "vtun")
 {
     fd = -1;
-    write_to = get_as<string>(node, "write_to");
-    mtu = get_as<unsigned int>(node, "mtu", 1024*10);
 }
 
 vtun::~vtun() {
@@ -91,8 +89,6 @@ int vtun::set_state(module_state_t requested_state) {
         case safeop_2_preop:
         case safeop_2_init:
             // ====> stop receiving measurements
-            stop();
-
             if (    (transition == op_2_preop) ||
                     (transition == safeop_2_preop))
                 break;
@@ -108,10 +104,6 @@ int vtun::set_state(module_state_t requested_state) {
         case init_2_safeop:
         case init_2_preop: {
             // ====> initial devices            
-            write_to_stream = k.get_stream(write_to);
-            if(!write_to_stream)
-                throw ::str_exception_tb("could not get write_to module named %s", repr(write_to).c_str());
-
             fd = open("/dev/net/tun", O_RDWR);
             if(fd == -1)
                 throw errno_exception_tb("could not open /dev/net/tun");
@@ -136,8 +128,6 @@ int vtun::set_state(module_state_t requested_state) {
         case preop_2_op:
         case preop_2_safeop:
             // ====> start receiving measurements
-            start();
-
             if (    (transition == init_2_safeop) ||
                     (transition == preop_2_safeop))
                 break;
@@ -157,31 +147,25 @@ int vtun::set_state(module_state_t requested_state) {
     return (this->state = requested_state);
 }
 
-void vtun::run() {
-    log(info, "vtun tid %d started!\n", gettid());
-
-    vector<char> receive_buffer(mtu);
-    while (running()) {
-        int len = ::read(fd, &receive_buffer[0], mtu);
-        if(len == -1)
-            throw errno_exception_tb("failed to read max %d bytes from tun device", mtu);
-        log(verbose, "got net packet of length %d\n", len);
-
-        int n = write_to_stream->write(&receive_buffer[0], (size_t)len);
-        if(n != len)
-            log(warning, "wanted to write %d bytes to %s->write() returned %d\n", len, write_to.c_str(), n);
+size_t read(void* buf, size_t bufsize) {
+    int len = ::read(fd, buf, bufsize);
+    if (len == -1) {
+        log(warning, "failed to read max %d bytes from tun device", mtu);
+        return 0;
     }
 
-    log(info, "vtun handler %d stopping\n", gettid());
+    log(verbose, "got net packet of length %d\n", len);
+    return len;
 }
 
 size_t vtun::write(void* buf, size_t bufsize) {
     // send packet!
     int n = ::write(fd, buf, bufsize);
-//    if(n == -1)
-//        throw errno_exception_tb("write(%d bytes)", bufsize);
-    if(n != (int)bufsize)
+    if (n == -1)
+        log(warning, "wanted to write %d bytes, write() returned %d: %s\n", bufsize, n, strerror(errno));
+    else if (n != (int)bufsize)
         log(warning, "wanted to write %d bytes, write() returned %d\n", bufsize, n);
+
     return n;
 }
 
