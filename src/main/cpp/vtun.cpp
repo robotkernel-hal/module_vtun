@@ -59,7 +59,7 @@ int gettid() {
 
 
 vtun::vtun(string name, const YAML::Node& node) : 
-    runnable(node), module_base("vtun", name, node), stream(name, "vtun")
+    module_base("vtun", name, node), stream(name, "vtun")
 {
     fd = -1;
 }
@@ -147,10 +147,10 @@ int vtun::set_state(module_state_t requested_state) {
     return (this->state = requested_state);
 }
 
-size_t read(void* buf, size_t bufsize) {
+size_t vtun::read(void* buf, size_t bufsize) {
     int len = ::read(fd, buf, bufsize);
     if (len == -1) {
-        log(warning, "failed to read max %d bytes from tun device", mtu);
+        log(warning, "failed to read max %d bytes from tun device", 10000); //mtu);
         return 0;
     }
 
