@@ -1,3 +1,11 @@
+This module creates a linux tun device and provides a robotkernel-5 stream device.
+
 = Configuration = 
+
+There is no special config needed.
+
+= Stream device = 
+
+The stream device is named '''<name>.vtun.stream'''.
 
 [[Category:Robotkernel-5|VTUN]]
