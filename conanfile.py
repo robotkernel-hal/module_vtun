@@ -5,6 +5,6 @@ class MainProject(ConanFile):
     python_requires_extend = "conan_template.RobotkernelConanFile"
 
     name = "module_vtun"
-    description = "robotkernel-5 is a modular, easy configurable hardware abstraction framework"
+    description = ""
     exports_sources = ["*", "!.gitignore"]
-    requires = ["robotkernel/[~=5]@robotkernel/stable", ] 
+    requires = ["robotkernel/[~6]@robotkernel/unstable", ] 
