@@ -1,6 +1,7 @@
 //! robotkernel module for vtun
 /*!
  * author: Florian Schmidt <florian.schmidt@dlr.de>
+ * author: Robert Burger <robert.burger@dlr.de>
  */
 
 /*
@@ -24,7 +25,7 @@
 
 #include <string>
 
-#include <robotkernel/kernel.h>
+#include <robotkernel/robotkernel.h>
 #include <robotkernel/helpers.h>
 #include <robotkernel/runnable.h>
 #include <robotkernel/stream.h>
@@ -32,17 +33,15 @@
 
 #include <yaml-cpp/yaml.h>
 
-namespace module_vtun {
-#ifdef EMACS
-}
-#endif
-
 using namespace std;
+using namespace robotkernel;
+
+namespace module_vtun {
 
 class vtun : 
-    public std::enable_shared_from_this<vtun>,
-    public robotkernel::module_base,
-    public robotkernel::stream
+    public enable_shared_from_this<vtun>,
+    public module_base,
+    public stream
 {
     private:
         int fd;                                     //!< tun device file descriptor
@@ -57,25 +56,21 @@ class vtun :
         vtun(string name, const YAML::Node& node);
         ~vtun();
 
-        void init() {
-            robotkernel::kernel::get_instance()->add_device(
-                    std::static_pointer_cast<stream>(shared_from_this()));
+        virtual void init() override {
+            add_device(static_pointer_cast<stream>(shared_from_this()));
         }
 
         //! set state
         /*!
          * \param state new state
          */
-        int set_state(module_state_t requested_state);
+        virtual int set_state(module_state_t requested_state) override;
 
-        size_t write(void* buf, size_t bufsize);
-        size_t read(void* buf, size_t bufsize);
+        virtual size_t write(void* buf, size_t bufsize) override;
+        virtual size_t read(void* buf, size_t bufsize) override;
 };
 
-#ifdef EMACS
-{
-#endif
-}
+}; // namespace module_vtun 
 
 #endif // VTUN_H
 

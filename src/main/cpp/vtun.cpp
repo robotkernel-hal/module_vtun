@@ -1,6 +1,7 @@
 //! robotkernel module for vtun
 /*!
  * author: Florian Schmidt <florian.schmidt@dlr.de>
+ * author: Robert Burger <robert.burger@dlr.de>
  */
 
 /*
@@ -28,6 +29,8 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
+#include <string.h>
+#include <errno.h>
 
 #include <sys/syscall.h>
 #include <sys/ioctl.h>
@@ -35,14 +38,11 @@
 #include <linux/if.h>
 #include <linux/if_tun.h>
 
-#include <string_util/string_util.h>
-
 #include <vector>
 #include <string>
 
 using namespace std;
 using namespace robotkernel;
-using namespace string_util;
 using namespace module_vtun;
 
 MODULE_DEF(module_vtun, module_vtun::vtun);
@@ -68,14 +68,11 @@ vtun::~vtun() {
     if(state != module_state_init)
         set_state(module_state_init);
             
-    kernel::get_instance()->remove_device(
-            std::static_pointer_cast<stream>(shared_from_this()));
+    remove_device(static_pointer_cast<stream>(shared_from_this()));
 }
 
 // set state
 int vtun::set_state(module_state_t requested_state) {
-    kernel& k = *kernel::get_instance();
-
     // get transition
     uint32_t transition = GEN_STATE(this->state, requested_state);
 
@@ -106,7 +103,7 @@ int vtun::set_state(module_state_t requested_state) {
             // ====> initial devices            
             fd = open("/dev/net/tun", O_RDWR);
             if(fd == -1)
-                throw errno_exception_tb("could not open /dev/net/tun");
+                throw runtime_error(string_printf("could not open /dev/net/tun: %s", strerror(errno)));
 
             struct ifreq ifr;
             memset(&ifr, 0, sizeof(ifr));
@@ -118,7 +115,7 @@ int vtun::set_state(module_state_t requested_state) {
             ifr.ifr_flags = IFF_TUN; 
 
             if(ioctl(fd, TUNSETIFF, (void *)&ifr))
-                throw errno_exception_tb("could not request tun/tap device\n");
+                throw runtime_error(string_printf("could not request tun/tap device: %s", strerror(errno)));
             if_name = ifr.ifr_name;
             log(info, "using interface %s\n", if_name.c_str());
 
