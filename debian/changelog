@@ -1,0 +1,60 @@
+module-vtun (6.0.0) unstable; urgency=low
+
+  * switched to conan template
+  * switching to defaults
+  * switching to defaults
+  * added architectures
+  * fixed jenkinsfile
+  * added architectures
+  * build: updated build/ci files for cissy 1.0->2.0
+  * updated jenkins file
+  * updated requires
+  * added missing m4 script
+  * updated pkg config check
+  * updated requiers
+  * added conan/jenkins stuff
+  * added wiki README
+  * added wiki README
+  * fixed base class constructor calling
+  * added doc and description
+  * fix: vtun now uses robotkernel stream correctly
+  * fixed service definition to match yaml 1.2 spec, fixed dependencies
+  * robotkernel-5 changes
+  * switched to transition base state machine
+  * fixed makefiles
+  * added files for autotools build
+
+ -- Robert Burger <robert.burger@dlr.de>  Tue, 17 Dec 2019 10:52:20 +0100
+
+module-vtun (4.1.1) unstable; urgency=low
+
+  * inc version
+
+ -- Robert Burger <robert.burger@dlr.de>  Thu, 1 Dec 2016 07:36:59 +0100
+
+module-vtun (4.1.0) unstable; urgency=low
+
+  * 'automated_commit'
+  * 'scripts_updated'
+  * 'scripts_updated'
+  * fixed vxworks SIGILL
+  * 'scripts_updated'
+  * switched doc to github
+  * fixed build
+  * 'replaced_with_default'
+  * 'scripts_updated'
+  * 'scripts_updated'
+  * 'scripts_updated'
+  * 'scripts_updated'
+  * "transforming"
+  * 'scripts_updated'
+  * updated scripts
+  * include sys/syscall.h for gettid
+  * use install -p
+  * working tcp example
+  * first simple test starting
+  * initial configure working
+  * initial version
+
+ -- Robert Burger <robert.burger@dlr.de>  Wed, 30 Nov 2016 10:28:18 +0100
+
