@@ -43,6 +43,7 @@
 
 using namespace std;
 using namespace robotkernel;
+using namespace robotkernel::helpers;
 using namespace module_vtun;
 
 MODULE_DEF(module_vtun, module_vtun::vtun);
