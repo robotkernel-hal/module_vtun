@@ -1,4 +1,4 @@
-module-vtun (6.0.0) unstable; urgency=low
+module-vtun (6.0.0) stable; urgency=low
 
   * switched to conan template
   * switching to defaults
